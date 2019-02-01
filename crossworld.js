@@ -24,6 +24,8 @@ function tryAddWord(w) {
             return (line<position) ? addVertWord(0,column,w) : addVertWord(line-position,column,w);
           else if(checkHorizontal(parseInt(line), parseInt(column), w, position))
             return (column<position) ? addHorizWord(line,0,w) : addHorizWord(line,column-position,w);
+          else
+            continue;
         }
       }
     }
@@ -37,6 +39,13 @@ function checkVertical (l, c, w, pos ) {
       return false;
   if(crossword[l+1])
     if(crossword[l+1][c]!==undefined && crossword[l+1][c]!=="")
+      return false;
+  if(crossword[l-pos-1]) {
+      if(crossword[l-pos-1][c]!==undefined && crossword[l-pos-1][c]!=="") 
+        return false;      
+  }    
+  if(crossword[l+(w.length-pos)])
+    if(crossword[l+(w.length-pos)][c]!==undefined && crossword[l+(w.length-pos)][c]!=="")
       return false;
   let linesAddStart, linesAddEnd;
   if(l<pos) {
@@ -87,6 +96,12 @@ function checkHorizontal (l, c, w, pos ) {
   if(crossword[l][c+1])
     if(crossword[l][c+1]!==undefined && crossword[l][c+1]!=="")
       return false;
+  if(crossword[l][c-pos-1])
+      if(crossword[l][c-pos-1]!==undefined && crossword[l][c-pos-1]!=="")
+        return false;        
+  if(crossword[l][c+(w.length-pos)])
+    if(crossword[l][c+(w.length-pos)]!==undefined && crossword[l][c+(w.length-pos)]!=="")
+      return false;    
   let columnsAddStart, columnsAddEnd;
   if(c<pos) {
     columnsAddStart = pos - c;
@@ -177,8 +192,10 @@ function redraw() {
       span.classList.add("letter");
       if(char)
         span.innerText = char;
-      else
+      else {
         span.innerText = "-";
+        span.classList.add("empty");
+      }
       div.appendChild(span);
     }
     root.appendChild(div);
