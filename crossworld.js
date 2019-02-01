@@ -1,6 +1,6 @@
 let button = document.getElementById("submit");
 let word = document.getElementById("word");
-button.addEventListener("click",()=>{tryAddWord(word.value)});
+button.addEventListener("click",()=>{tryAddWord(word.value);word.value="";});
 let crossword = [];
 let data = {};
 
@@ -22,7 +22,8 @@ function tryAddWord(w) {
           let position = w.indexOf(letter);
           if(checkVertical(parseInt(line), parseInt(column), w, position))
             return (line<position) ? addVertWord(0,column,w) : addVertWord(line-position,column,w);
-
+          else if(checkHorizontal(parseInt(line), parseInt(column), w, position))
+            return (column<position) ? addHorizWord(line,0,w) : addHorizWord(line,column-position,w);
         }
       }
     }
@@ -51,15 +52,13 @@ function checkVertical (l, c, w, pos ) {
         && letter!==w[char]) {
           console.log(letter, w[char]);
           return false;
-          // return checkHorizontal (l,c,w,pos);
       }
-    } else if (char>pos && l+parseInt(char)<crossword.length) {
-      let letter = crossword[l+parseInt(char)][c];
+    } else if (char>pos && l+char<crossword.length) {
+      let letter = crossword[l+char][c];
       if(letter!==undefined && letter!==""
         && letter!==w[char]) {
           console.log(letter, w[char]);
           return false;
-          // return checkHorizontal (l,c,w,pos);
       }
     }
   }
@@ -77,6 +76,55 @@ function checkVertical (l, c, w, pos ) {
 function addVertWord(l,c,w) {
   for (let char in w) {
     crossword[l+parseInt(char)][c] = w[char];
+  }
+  return redraw();
+}
+
+function checkHorizontal (l, c, w, pos ) {
+  if(crossword[l][c-1])
+    if(crossword[l][c-1]!==undefined && crossword[l][c-1]!=="")
+      return false;
+  if(crossword[l][c+1])
+    if(crossword[l][c+1]!==undefined && crossword[l][c+1]!=="")
+      return false;
+  let columnsAddStart, columnsAddEnd;
+  if(c<pos) {
+    columnsAddStart = pos - c;
+  }
+  if(crossword[l].length-c < w.length-pos) {
+    columnsAddEnd = (w.length-pos) - (crossword[l].length-c);
+  }
+  for (let char=0; char<w.length; char++) {
+    if(char<=pos && c-(pos-char)>=0) {
+      let letter = crossword[l][c-(pos-char)];
+      if(letter!==undefined && letter!==""
+        && letter!==w[char]) {
+          console.log(letter, w[char]);
+          return false;
+      }
+    } else if (char>pos && c+char<crossword[l].length) {
+      let letter = crossword[l][c+char];
+      if(letter!==undefined && letter!==""
+        && letter!==w[char]) {
+          console.log(letter, w[char]);
+          return false;
+      }
+    }
+  }
+  if (typeof columnsAddStart !== "undefined") {
+    addColumnsStart(columnsAddStart);
+    console.log("adding columns start:"+columnsAddStart);
+  }
+  if (typeof columnsAddEnd !== "undefined") {
+    addColumnsEnd(columnsAddEnd);
+    console.log("adding columns end:"+columnsAddEnd);
+  }
+  return true;
+}
+
+function addHorizWord(l,c,w) {
+  for (let char in w) {
+    crossword[l][c+parseInt(char)] = w[char];
   }
   return redraw();
 }
@@ -101,9 +149,9 @@ function addColumnsStart(num=1) {
   while (num>0) {
     for (let line in crossword) {
       crossword[line].unshift("");
-      num--;
     }
     data.columns++;
+    num--;
   }
 }
 
@@ -111,9 +159,9 @@ function addColumnsEnd(num=1) {
   while (num>0) {
     for (let line in crossword) {
       crossword[line].push("");
-      num--;
     }
     data.columns++;
+    num--;
   }
 }
 
