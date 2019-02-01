@@ -5,6 +5,7 @@ let crossword = [];
 let data = {};
 
 function tryAddWord(w) {
+  w = w.toLowerCase();
   w = Array.from(w);
   if(crossword.length===0) {
     crossword= [w];
