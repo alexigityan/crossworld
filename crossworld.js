@@ -35,17 +35,17 @@ function tryAddWord(w) {
 
 function checkVertical (l, c, w, pos ) {
   if(crossword[l-1])
-    if(crossword[l-1][c]!==undefined && crossword[l-1][c]!=="")
+    if(crossword[l-1][c])
       return false;
   if(crossword[l+1])
-    if(crossword[l+1][c]!==undefined && crossword[l+1][c]!=="")
+    if(crossword[l+1][c])
       return false;
   if(crossword[l-pos-1]) {
-      if(crossword[l-pos-1][c]!==undefined && crossword[l-pos-1][c]!=="") 
+      if(crossword[l-pos-1][c]) 
         return false;      
   }    
   if(crossword[l+(w.length-pos)])
-    if(crossword[l+(w.length-pos)][c]!==undefined && crossword[l+(w.length-pos)][c]!=="")
+    if(crossword[l+(w.length-pos)][c])
       return false;
   let linesAddStart, linesAddEnd;
   if(l<pos) {
@@ -55,27 +55,32 @@ function checkVertical (l, c, w, pos ) {
     linesAddEnd = (w.length-pos) - (crossword.length-l)
   }
   for (let char=0; char<w.length; char++) {
-    if(char<=pos && l-(pos-char)>=0) {
+    if(char<pos && l-(pos-char)>=0) {
+      let neighbor1, neighbor2;
       let letter = crossword[l-(pos-char)][c];
-      if(letter!==undefined && letter!==""
-        && letter!==w[char]) {
-          console.log(letter, w[char]);
+      if(crossword[l-(pos-char)][c-1])
+        neighbor1 = crossword[l-(pos-char)][c-1];
+      if(crossword[l-(pos-char)][c+1])
+        neighbor2 = crossword[l-(pos-char)][c+1];
+      if(letter && letter!==w[char] || (neighbor1 || neighbor2)) 
           return false;
-      }
+      
     } else if (char>pos && l+char<crossword.length) {
+      let neighbor1, neighbor2;
       let letter = crossword[l+char][c];
-      if(letter!==undefined && letter!==""
-        && letter!==w[char]) {
-          console.log(letter, w[char]);
+      if(crossword[l+char][c-1])
+        neighbor1 = crossword[l+char][c-1];
+      if(crossword[l+char][c+1])
+        neighbor2 = crossword[l+char][c+1];
+      if(letter && letter!==w[char] || (neighbor1 || neighbor2))
           return false;
-      }
     }
   }
-  if (typeof linesAddStart !== "undefined") {
+  if (linesAddStart) {
     addLinesStart(linesAddStart);
     console.log("adding lines start:"+linesAddStart);
   }
-  if (typeof linesAddEnd !== "undefined") {
+  if (linesAddEnd) {
     addLinesEnd(linesAddEnd);
     console.log("adding lines end:"+linesAddEnd);
   }
@@ -91,16 +96,16 @@ function addVertWord(l,c,w) {
 
 function checkHorizontal (l, c, w, pos ) {
   if(crossword[l][c-1])
-    if(crossword[l][c-1]!==undefined && crossword[l][c-1]!=="")
+    if(crossword[l][c-1])
       return false;
   if(crossword[l][c+1])
-    if(crossword[l][c+1]!==undefined && crossword[l][c+1]!=="")
+    if(crossword[l][c+1])
       return false;
   if(crossword[l][c-pos-1])
-      if(crossword[l][c-pos-1]!==undefined && crossword[l][c-pos-1]!=="")
+      if(crossword[l][c-pos-1])
         return false;        
   if(crossword[l][c+(w.length-pos)])
-    if(crossword[l][c+(w.length-pos)]!==undefined && crossword[l][c+(w.length-pos)]!=="")
+    if(crossword[l][c+(w.length-pos)])
       return false;    
   let columnsAddStart, columnsAddEnd;
   if(c<pos) {
@@ -110,18 +115,24 @@ function checkHorizontal (l, c, w, pos ) {
     columnsAddEnd = (w.length-pos) - (crossword[l].length-c);
   }
   for (let char=0; char<w.length; char++) {
-    if(char<=pos && c-(pos-char)>=0) {
+    if(char<pos && c-(pos-char)>=0) {
+      let neighbor1, neighbor2;
       let letter = crossword[l][c-(pos-char)];
-      if(letter!==undefined && letter!==""
-        && letter!==w[char]) {
-          console.log(letter, w[char]);
+      if (crossword[l-1])
+        neighbor1 = crossword[l-1][c-(pos-char)];
+      if (crossword[l+1])
+        neighbor2 = crossword[l+1][c-(pos-char)];
+      if(letter && letter!==w[char] || (neighbor1 || neighbor2)) {
           return false;
       }
     } else if (char>pos && c+char<crossword[l].length) {
+      let neighbor1, neighbor2;
       let letter = crossword[l][c+char];
-      if(letter!==undefined && letter!==""
-        && letter!==w[char]) {
-          console.log(letter, w[char]);
+      if (crossword[l-1])
+        neighbor1 = crossword[l-1][c+char];
+      if (crossword[l+1])
+        neighbor2 = crossword[l+1][c+char];
+      if(letter && letter!==w[char] || (neighbor1 || neighbor2)) {
           return false;
       }
     }
