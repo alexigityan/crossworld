@@ -1,3 +1,6 @@
+let button = document.getElementById("submit");
+let word = document.getElementById("word");
+button.addEventListener("click",()=>{tryAddWord(word.value)});
 let crossword = [];
 let data = {};
 
@@ -5,6 +8,8 @@ function tryAddWord(w) {
   w = Array.from(w);
   if(crossword.length===0) {
     crossword= [w];
+    data.lines = 1;
+    data.columns = w.length;
     return redraw();
   }
 
@@ -39,8 +44,8 @@ function checkVertical (l, c, w, pos ) {
     linesAddEnd = (w.length-pos) - (crossword.length-l)
   }
   for (let char=0; char<w.length; char++) {
-    if(char<=pos && l-char>0) {
-      let letter = crossword[l-char][c];
+    if(char<=pos && l-(pos-char)>=0) {
+      let letter = crossword[l-(pos-char)][c];
       if(letter!==undefined && letter!==""
         && letter!==w[char]) {
           console.log(letter, w[char]);
@@ -77,14 +82,16 @@ function addVertWord(l,c,w) {
 
 function addLinesStart(num=1) {
   while (num>0) {
-    crossword.unshift([]);
+    crossword.unshift(Array(data.columns));
+    data.lines++;
     num--;
   }
 }
 
 function addLinesEnd(num=1) {
   while (num>0) {
-    crossword.push([]);
+    crossword.push(Array(data.columns));
+    data.lines++;
     num--;
   }
 }
@@ -95,6 +102,7 @@ function addColumnsStart(num=1) {
       crossword[line].unshift("");
       num--;
     }
+    data.columns++;
   }
 }
 
@@ -104,6 +112,7 @@ function addColumnsEnd(num=1) {
       crossword[line].push("");
       num--;
     }
+    data.columns++;
   }
 }
 
