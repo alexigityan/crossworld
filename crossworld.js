@@ -62,17 +62,17 @@ function checkVertical (l, c, w, pos ) {
         neighbor1 = crossword[l-(pos-char)][c-1];
       if(crossword[l-(pos-char)][c+1])
         neighbor2 = crossword[l-(pos-char)][c+1];
-      if(letter && letter!==w[char] || (neighbor1 || neighbor2)) 
+      if((letter && letter!==w[char]) || (neighbor1 || neighbor2)) 
           return false;
       
-    } else if (char>pos && l+char<crossword.length) {
+    } else if (char>pos && l+(char-pos)<crossword.length) {
       let neighbor1, neighbor2;
-      let letter = crossword[l+char][c];
-      if(crossword[l+char][c-1])
-        neighbor1 = crossword[l+char][c-1];
-      if(crossword[l+char][c+1])
-        neighbor2 = crossword[l+char][c+1];
-      if(letter && letter!==w[char] || (neighbor1 || neighbor2))
+      let letter = crossword[l+(char-pos)][c];
+      if(crossword[l+(char-pos)][c-1])
+        neighbor1 = crossword[l+(char-pos)][c-1];
+      if(crossword[l+(char-pos)][c+1])
+        neighbor2 = crossword[l+(char-pos)][c+1];
+      if((letter && letter!==w[char]) || (neighbor1 || neighbor2))
           return false;
     }
   }
@@ -122,17 +122,17 @@ function checkHorizontal (l, c, w, pos ) {
         neighbor1 = crossword[l-1][c-(pos-char)];
       if (crossword[l+1])
         neighbor2 = crossword[l+1][c-(pos-char)];
-      if(letter && letter!==w[char] || (neighbor1 || neighbor2)) {
+      if((letter && letter!==w[char]) || (neighbor1 || neighbor2)) {
           return false;
       }
-    } else if (char>pos && c+char<crossword[l].length) {
+    } else if (char>pos && c+(char-pos)<crossword[l].length) {
       let neighbor1, neighbor2;
-      let letter = crossword[l][c+char];
+      let letter = crossword[l][c+(char-pos)];
       if (crossword[l-1])
-        neighbor1 = crossword[l-1][c+char];
+        neighbor1 = crossword[l-1][c+(char-pos)];
       if (crossword[l+1])
-        neighbor2 = crossword[l+1][c+char];
-      if(letter && letter!==w[char] || (neighbor1 || neighbor2)) {
+        neighbor2 = crossword[l+1][c+(char-pos)];
+      if((letter && letter!==w[char]) || (neighbor1 || neighbor2)) {
           return false;
       }
     }
@@ -199,15 +199,15 @@ function redraw() {
     let div = document.createElement("div");
     div.classList.add("line");
     for (let char of crossword[line]) {
-      let span = document.createElement("span");
-      span.classList.add("letter");
+      let letter = document.createElement("div");
+      letter.classList.add("letter");
       if(char)
-        span.innerText = char;
+        letter.innerText = char;
       else {
-        span.innerText = "-";
-        span.classList.add("empty");
+        // letter.innerText = "-";
+        letter.classList.add("empty");
       }
-      div.appendChild(span);
+      div.appendChild(letter);
     }
     root.appendChild(div);
   }

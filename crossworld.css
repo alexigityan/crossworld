@@ -1,18 +1,21 @@
 .letter {
   display:inline-block;
+  vertical-align:top;
+  height:1em;
+  width:1em;
   border:1px solid black;
-  width:10px;
-  margin-left:5px;
-  margin-right:5px;
-  padding:10px;
+  margin-left:0.25em;
+  margin-right:0.25em;
+  padding:1em;
   text-transform:uppercase;
 }
 
 .line {
-  margin-top:5px;
-  margin-bottom:5px;
+  margin-top:0.25em;
+  margin-bottom:0.25em;
 }
 
 .empty {
-  background-color:black;
+  visibility: hidden;
+  /* background-color:black; */
 }
