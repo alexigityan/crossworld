@@ -2,59 +2,60 @@ let addWord = document.getElementById("addWord");
 let word = document.getElementById("word");
 let generate = document.getElementById("generate");
 let wordsHTML = document.getElementById("words");
-addWord.addEventListener("click",()=>{words.push(word.value);wordsHTML.innerText+=" / "+word.value;word.value="";});
-generate.addEventListener("click",()=>{crossword=[];for(let word in words){tryAddWord(words[word])}});
+addWord.addEventListener("click",()=>{
+  words[Object.keys(words).length]=word.value;
+  wordsHTML.innerText+=" / "+word.value;
+  word.value="";
+});
+generate.addEventListener("click",()=>{
+  crossword=[];
+  for(let word in words) {
+    tryAddWord(words[word],word);
+  };
+});
 let crossword = [];
-let words = [];
+let words = {};
 
-function tryAddWord(w) {
+function tryAddWord(w, id) {
 
   w = w.toLowerCase();
   w = Array.from(w);
   if(crossword.length===0) {
-    crossword= [w];
-
-    return redraw();
+    addLinesStart(1,w.length);
+    return addHorizWord(0,0,w,0,id);
   }
-  console.time("Finding word position");
   let choices = {};
   let maxIntersections = 0;
 
   for (let line in crossword) {
     for (let column in crossword[line]) {
-      if(crossword[line][column]) {
+      if(!crossword[line][column].empty) {
         let letter = crossword[line][column];
-        if (w.indexOf(letter)!==-1) {
-          checkVertical(parseInt(line), parseInt(column), w);            
-          checkHorizontal(parseInt(line), parseInt(column), w);
+        if (w.indexOf(letter.value)!==-1) {
+          if (!letter.vertical)
+            checkVertical(parseInt(line), parseInt(column), w);
+          if (!letter.horizontal)            
+            checkHorizontal(parseInt(line), parseInt(column), w);
         }
       }
     }
   }
-  console.timeEnd("Finding word position");
-  console.log(choices);
   if (maxIntersections>0) {
     let options = choices[maxIntersections];
     let rand = Math.round(Math.random()*(options.length-1));
     let choice = options[rand];
     if(choice.vertical)
       return addVertWord(choice.line,choice.column,w,
-        choice.position);
+        choice.position, id);
     else
       return addHorizWord(choice.line,choice.column,w,
-        choice.position);
+        choice.position, id);
   }
 
 
   function checkVertical (l, c, w) {
-    if(crossword[l-1])
-      if(crossword[l-1][c])
-        return false;
-    if(crossword[l+1])
-      if(crossword[l+1][c])
-        return false;
     let positions = [];
-    let ch = crossword[l][c];
+    let ch = crossword[l][c].value;
     function findPositions(word,char,index) {
       let position = word.indexOf(char,index);
       if (position!==-1) {
@@ -67,11 +68,11 @@ function tryAddWord(w) {
     for (let p in positions) {
       let pos = positions[p];
       if(crossword[l-pos-1]) {
-        if(crossword[l-pos-1][c]) 
+        if(!crossword[l-pos-1][c].empty) 
           continue;    
       }    
       if(crossword[l+(w.length-pos)]) {
-        if(crossword[l+(w.length-pos)][c])
+        if(!crossword[l+(w.length-pos)][c].empty)
           continue;
       }
       let check = true;
@@ -84,10 +85,11 @@ function tryAddWord(w) {
             neighbor1 = crossword[l-(pos-char)][c-1];
           if(crossword[l-(pos-char)][c+1])
             neighbor2 = crossword[l-(pos-char)][c+1];
-          if((letter && letter!==w[char]) || (!letter && (neighbor1 || neighbor2))) {
+          if((!letter.empty && letter.value!==w[char]) || 
+              (letter.empty && (neighbor1 && !neighbor1.empty || neighbor2 && !neighbor2.empty))) {
             check = false;  
             break;
-          } else if (letter && letter===w[char])
+          } else if (!letter.empty && letter.value===w[char])
             intersections++;
         } else if (char>pos && l+(char-pos)<crossword.length) {
           let neighbor1, neighbor2;
@@ -96,10 +98,11 @@ function tryAddWord(w) {
             neighbor1 = crossword[l+(char-pos)][c-1];
           if(crossword[l+(char-pos)][c+1])
             neighbor2 = crossword[l+(char-pos)][c+1];
-          if((letter && letter!==w[char]) || (!letter && (neighbor1 || neighbor2))) {
+          if((!letter.empty && letter.value!==w[char]) || 
+              (letter.empty && (neighbor1 && !neighbor1.empty || neighbor2 && !neighbor2.empty))) {
             check = false;  
             break;
-          } else if (letter && letter===w[char])
+          } else if (!letter.empty && letter.value===w[char])
             intersections++;
         }
       }
@@ -119,14 +122,8 @@ function tryAddWord(w) {
   }
 
   function checkHorizontal (l, c, w) {
-    if(crossword[l][c-1])
-      if(crossword[l][c-1])
-        return false;
-    if(crossword[l][c+1])
-      if(crossword[l][c+1])
-        return false;
     let positions = [];
-    let ch = crossword[l][c];
+    let ch = crossword[l][c].value;
     function findPositions(word,char,index) {
       let position = word.indexOf(char,index);
       if (position!==-1) {
@@ -139,11 +136,11 @@ function tryAddWord(w) {
     for (let p in positions) {
       let pos = positions[p];
       if(crossword[l][c-pos-1]) {
-        if(crossword[l][c-pos-1])
+        if(!crossword[l][c-pos-1].empty)
           continue;  
       }      
       if(crossword[l][c+(w.length-pos)]) {
-        if(crossword[l][c+(w.length-pos)])
+        if(!crossword[l][c+(w.length-pos)].empty)
           continue;   
       }
       let check = true;
@@ -156,10 +153,11 @@ function tryAddWord(w) {
             neighbor1 = crossword[l-1][c-(pos-char)];
           if (crossword[l+1])
             neighbor2 = crossword[l+1][c-(pos-char)];
-          if((letter && letter!==w[char]) || (!letter && (neighbor1 || neighbor2))) {
+          if((!letter.empty && letter.value!==w[char]) || 
+              (letter.empty && (neighbor1 && !neighbor1.empty || neighbor2 && !neighbor2.empty))) {
             check = false;
             break;
-          } else if (letter && letter===w[char])
+          } else if (!letter.empty && letter.value===w[char])
             intersections++;
         } else if (char>pos && c+(char-pos)<crossword[l].length) {
           let neighbor1, neighbor2;
@@ -168,10 +166,11 @@ function tryAddWord(w) {
             neighbor1 = crossword[l-1][c+(char-pos)];
           if (crossword[l+1])
             neighbor2 = crossword[l+1][c+(char-pos)];
-          if((letter && letter!==w[char]) || (!letter && (neighbor1 || neighbor2))) {
+          if((!letter.empty && letter.value!==w[char]) || 
+              (letter.empty && (neighbor1 && !neighbor1.empty || neighbor2 && !neighbor2.empty))) {
             check = false;  
             break;
-          } else if (letter && letter===w[char])
+          } else if (!letter.empty && letter.value===w[char])
             intersections++;
         }
       }
@@ -193,7 +192,7 @@ function tryAddWord(w) {
 
 
 
-function addVertWord(l,c,w,pos) {
+function addVertWord(l,c,w,pos,id) {
   if(l<pos) {
     addLinesStart(pos - l);
     l+=pos-l;
@@ -202,14 +201,21 @@ function addVertWord(l,c,w,pos) {
     addLinesEnd( (w.length-pos) - (crossword.length-l) );
   }
   for (let char in w) {
-    crossword[l-pos+parseInt(char)][c] = w[char];
+    let letter = crossword[l-pos+parseInt(char)][c];
+    letter.empty = false;
+    letter.vertical = true;
+    letter.value = w[char];
+    if (typeof letter.words === "undefined")
+      letter.words = [];
+    letter.words.push("v-"+id);
+    letter.posV = parseInt(char);
   }
   return redraw();
 }
 
 
 
-function addHorizWord(l,c,w,pos) {
+function addHorizWord(l,c,w,pos,id) {
   if(c<pos) {
     addColumnsStart(pos - c);
     c+=pos-c;
@@ -218,30 +224,50 @@ function addHorizWord(l,c,w,pos) {
     addColumnsEnd( (w.length-pos) - (crossword[l].length-c) );
   }
   for (let char in w) {
-    crossword[l][c-pos+parseInt(char)] = w[char];
+    let letter = crossword[l][c-pos+parseInt(char)];
+    letter.empty = false;
+    letter.horizontal = true;
+    letter.value = w[char];
+    if (typeof letter.words === "undefined")
+      letter.words = [];
+    letter.words.push("h-"+id);
+    letter.posH = parseInt(char);
   }
   return redraw();
 }
 
-function addLinesStart(num=1) {
+function addLinesStart(num, length=crossword[0].length) {
   while (num>0) {
-    crossword.unshift(Array(crossword[0].length));
-
+    let line = [];
+    for (let i=0;i<length;i++) {
+      let letter = {};
+      letter.empty = true;
+      line.push(letter);
+    }
+    crossword.unshift(line);
     num--;
   }
 }
 
-function addLinesEnd(num=1) {
+function addLinesEnd(num, length=crossword[0].length) {
   while (num>0) {
-    crossword.push(Array(crossword[0].length));
+    let line = [];
+    for (let i=0;i<length;i++) {
+      let letter = {};
+      letter.empty = true;
+      line.push(letter);
+    }
+    crossword.push(line);
     num--;
   }
 }
 
-function addColumnsStart(num=1) {
+function addColumnsStart(num) {
   while (num>0) {
     for (let line in crossword) {
-      crossword[line].unshift("");
+      let letter = {};
+      letter.empty = true;
+      crossword[line].unshift(letter);
     }
     num--;
   }
@@ -250,7 +276,9 @@ function addColumnsStart(num=1) {
 function addColumnsEnd(num=1) {
   while (num>0) {
     for (let line in crossword) {
-      crossword[line].push("");
+      let letter = {};
+      letter.empty = true;
+      crossword[line].push(letter);
     }
     num--;
   }
@@ -261,19 +289,48 @@ function redraw() {
   let root = document.getElementById("root");
   root.innerHTML = "";
   for (let line in crossword) {
-    let div = document.createElement("div");
-    div.classList.add("line");
-    for (let char of crossword[line]) {
-      let letter = document.createElement("div");
-      letter.classList.add("letter");
-      if(char)
-        letter.innerText = char;
-      else {
-        // letter.innerText = "-";
-        letter.classList.add("empty");
+    let lineDiv = document.createElement("div");
+    lineDiv.classList.add("line");
+    for (let char in crossword[line]) {
+      let letter = crossword[line][char];
+      let letterDiv = document.createElement("div");
+      letterDiv.classList.add("letter");
+      if(!letter.empty) {
+        letterDiv.innerText = letter.value;
+        for(let word in letter.words)
+          letterDiv.classList.add(letter.words[word]);
+        if(letter.posH===0) {
+          if(letter.posV===0) {
+            crossword[parseInt(line)+1][char].addListener = true;
+          }
+          letterDiv.classList.add("clickable");
+          letterDiv.addEventListener("click",(e)=>{
+            let classList = e.target.classList;
+            for (let cl in classList) {
+              if(classList[cl] !== "letter" && classList[cl].indexOf("v-")===-1 && classList[cl] !== "clickable") {
+                let letters = Array.from(document.getElementsByClassName(classList[cl]));
+                letters.forEach((let)=>let.style.backgroundColor="lightblue");             
+              }
+            }
+          });
+        } else if (letter.posV===0 || letter.addListener) {
+          letterDiv.classList.add("clickable");
+
+          letterDiv.addEventListener("click",(e)=>{
+            let classList = e.target.classList;
+            for (let cl in classList) {
+              if(classList[cl] !== "letter" && classList[cl].indexOf("h-")===-1 && classList[cl] !== "clickable") {
+                let letters = Array.from(document.getElementsByClassName(classList[cl]));
+                letters.forEach((let)=>let.style.backgroundColor="lightblue");             
+              }
+            }
+          });
+        }
+      } else {
+        letterDiv.classList.add("empty");
       }
-      div.appendChild(letter);
+      lineDiv.appendChild(letterDiv);
     }
-    root.appendChild(div);
+    root.appendChild(lineDiv);
   }
 }

@@ -23,3 +23,8 @@
 .empty {
   border-color:wheat;
 }
+
+.clickable {
+  cursor:pointer;
+  background-color:lightblue;
+}
