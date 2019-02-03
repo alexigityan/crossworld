@@ -1,8 +1,11 @@
-let button = document.getElementById("submit");
+let addWord = document.getElementById("addWord");
 let word = document.getElementById("word");
-button.addEventListener("click",()=>{tryAddWord(word.value);word.value="";});
+let generate = document.getElementById("generate");
+let wordsHTML = document.getElementById("words");
+addWord.addEventListener("click",()=>{words.push(word.value);wordsHTML.innerText+=" / "+word.value;word.value="";});
+generate.addEventListener("click",()=>{crossword=[];for(let word in words){tryAddWord(words[word])}});
 let crossword = [];
-let data = {};
+let words = [];
 
 function tryAddWord(w) {
 
@@ -10,8 +13,7 @@ function tryAddWord(w) {
   w = Array.from(w);
   if(crossword.length===0) {
     crossword= [w];
-    data.lines = 1;
-    data.columns = w.length;
+
     return redraw();
   }
   console.time("Finding word position");
@@ -33,7 +35,7 @@ function tryAddWord(w) {
   console.log(choices);
   if (maxIntersections>0) {
     let options = choices[maxIntersections];
-    let rand = Math.floor(Math.random()*(options.length-1));
+    let rand = Math.round(Math.random()*(options.length-1));
     let choice = options[rand];
     if(choice.vertical)
       return addVertWord(choice.line,choice.column,w,
@@ -223,16 +225,15 @@ function addHorizWord(l,c,w,pos) {
 
 function addLinesStart(num=1) {
   while (num>0) {
-    crossword.unshift(Array(data.columns));
-    data.lines++;
+    crossword.unshift(Array(crossword[0].length));
+
     num--;
   }
 }
 
 function addLinesEnd(num=1) {
   while (num>0) {
-    crossword.push(Array(data.columns));
-    data.lines++;
+    crossword.push(Array(crossword[0].length));
     num--;
   }
 }
@@ -242,7 +243,6 @@ function addColumnsStart(num=1) {
     for (let line in crossword) {
       crossword[line].unshift("");
     }
-    data.columns++;
     num--;
   }
 }
@@ -252,7 +252,6 @@ function addColumnsEnd(num=1) {
     for (let line in crossword) {
       crossword[line].push("");
     }
-    data.columns++;
     num--;
   }
 }
