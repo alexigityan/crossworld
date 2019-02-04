@@ -15,6 +15,7 @@
   color: saddlebrown;
 }
 
+
 .line {
   margin-top:0.25em;
   margin-bottom:0.25em;
@@ -24,7 +25,31 @@
   border-color:wheat;
 }
 
+
+.active {
+  background-color:lightgreen;
+}
+
 .clickable {
   cursor:pointer;
   background-color:lightblue;
+}
+
+#words {
+  padding:1em;
+}
+
+#words span {
+  background-color: #c6c6c6;
+  padding:0.1em 0.6em 0.1em 0.6em;
+  border:0.2em solid #c6c6c6;
+  margin-right:0.5em;
+  border-radius:0.25em;
+  text-transform:lowercase;
+  text-align:center;
+  cursor:pointer;
+}
+
+#words .selected-word {
+  border-color:black;
 }

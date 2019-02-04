@@ -1,23 +1,58 @@
 let addWord = document.getElementById("addWord");
 let word = document.getElementById("word");
 let generate = document.getElementById("generate");
-let wordsHTML = document.getElementById("words");
-addWord.addEventListener("click",()=>{
-  words[Object.keys(words).length]=word.value;
-  wordsHTML.innerText+=" / "+word.value;
-  word.value="";
-});
+let removeWord = document.getElementById("remove-word");
+
+removeWord.addEventListener("click",removeSelectedWord);
+addWord.addEventListener("click",()=>appendWord(word.value));
+
 generate.addEventListener("click",()=>{
-  crossword=[];
-  for(let word in words) {
-    tryAddWord(words[word],word);
-  };
+    crossword=[];    
+    for(let id in words) {
+      tryAddWord(words[id].word,id);
+    };    
 });
 let crossword = [];
 let words = {};
+let addedWords = 0;
+
+
+function appendWord(w) {
+  let id = 0;
+  while (words.hasOwnProperty(id))
+    id++;
+  words[id]={};
+  words[id].word=w
+  return makeWordHTML(w, id);
+}
+
+function makeWordHTML(w,id) {
+  let span = document.createElement("span");
+  span.classList.add("word");
+  function selectWord(node) {
+    let selectedWords = Array.from(document.getElementsByClassName("selected-word"));
+    selectedWords.forEach((elem)=>elem.classList.remove("selected-word"));
+    node.classList.add("selected-word");
+  }
+  selectWord(span);
+  span.addEventListener("click",(e)=>{selectWord(e.target)});
+  span.innerText = w;
+  span.setAttribute("word-id",id);
+  let wordsHTML = document.getElementById("words");
+  wordsHTML.appendChild(span);
+}
+
+function removeSelectedWord() {
+  let selectedWord = document.getElementsByClassName("selected-word")[0];
+  if(selectedWord) {
+    let id = selectedWord.getAttribute("word-id");
+    delete words[id];
+    let wordsHTML = document.getElementById("words");
+    wordsHTML.removeChild(selectedWord);
+  }
+}
 
 function tryAddWord(w, id) {
-
   w = w.toLowerCase();
   w = Array.from(w);
   if(crossword.length===0) {
@@ -210,6 +245,7 @@ function addVertWord(l,c,w,pos,id) {
     letter.words.push("v-"+id);
     letter.posV = parseInt(char);
   }
+  addedWords++;
   return redraw();
 }
 
@@ -233,6 +269,7 @@ function addHorizWord(l,c,w,pos,id) {
     letter.words.push("h-"+id);
     letter.posH = parseInt(char);
   }
+  addedWords++;
   return redraw();
 }
 
@@ -305,11 +342,13 @@ function redraw() {
           }
           letterDiv.classList.add("clickable");
           letterDiv.addEventListener("click",(e)=>{
-            let classList = e.target.classList;
+            let activeLetters = Array.from(document.getElementsByClassName("active"));
+            activeLetters.forEach((elem)=>elem.classList.remove("active"));
+            let classList = Array.from(e.target.classList);
             for (let cl in classList) {
               if(classList[cl] !== "letter" && classList[cl].indexOf("v-")===-1 && classList[cl] !== "clickable") {
                 let letters = Array.from(document.getElementsByClassName(classList[cl]));
-                letters.forEach((let)=>let.style.backgroundColor="lightblue");             
+                letters.forEach((let)=>let.classList.add("active"));             
               }
             }
           });
@@ -317,11 +356,13 @@ function redraw() {
           letterDiv.classList.add("clickable");
 
           letterDiv.addEventListener("click",(e)=>{
-            let classList = e.target.classList;
+            let activeLetters = Array.from(document.getElementsByClassName("active"));
+            activeLetters.forEach((elem)=>elem.classList.remove("active"));
+            let classList = Array.from(e.target.classList);
             for (let cl in classList) {
               if(classList[cl] !== "letter" && classList[cl].indexOf("h-")===-1 && classList[cl] !== "clickable") {
                 let letters = Array.from(document.getElementsByClassName(classList[cl]));
-                letters.forEach((let)=>let.style.backgroundColor="lightblue");             
+                letters.forEach((let)=>let.classList.add("active"));             
               }
             }
           });
