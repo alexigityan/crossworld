@@ -4,7 +4,11 @@ let generate = document.getElementById("generate");
 let removeWord = document.getElementById("remove-word");
 
 removeWord.addEventListener("click",removeSelectedWord);
-addWord.addEventListener("click",()=>appendWord(word.value));
+addWord.addEventListener("submit",(e)=>{
+  e.preventDefault();
+  appendWord(word.value);
+  word.value="";
+});
 
 generate.addEventListener("click",()=>{
     crossword=[];    

@@ -40,10 +40,12 @@
 }
 
 #words span {
+  display:inline-block;
   background-color: #c6c6c6;
   padding:0.1em 0.6em 0.1em 0.6em;
   border:0.2em solid #c6c6c6;
   margin-right:0.5em;
+  margin-bottom:1em;
   border-radius:0.25em;
   text-transform:lowercase;
   text-align:center;
