@@ -332,6 +332,7 @@ function redraw() {
   for (let line in crossword) {
     let lineDiv = document.createElement("div");
     lineDiv.classList.add("line");
+    lineDiv.style.width = (crossword[line].length * 54)+"px";
     for (let char in crossword[line]) {
       let letter = crossword[line][char];
       let letterDiv = document.createElement("div");

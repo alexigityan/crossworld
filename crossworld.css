@@ -1,3 +1,21 @@
+html {
+  height:100%;
+}
+
+body {
+  height:100%;
+}
+
+#view {
+  width:90%;
+  height:70%;
+  border: 1px solid gray;
+  padding:10px;
+  border-radius:20px;
+  margin:auto;
+  overflow:auto;
+}
+
 .letter {
   display:inline-block;
   vertical-align:top;
@@ -17,6 +35,7 @@
 
 
 .line {
+  margin:auto;
   margin-top:0.25em;
   margin-bottom:0.25em;
 }
