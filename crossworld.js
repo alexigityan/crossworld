@@ -18,7 +18,6 @@ generate.addEventListener("click",()=>{
 });
 let crossword = [];
 let words = {};
-let addedWords = 0;
 
 
 function appendWord(w) {
@@ -244,13 +243,12 @@ function addVertWord(l,c,w,pos,id) {
     letter.empty = false;
     letter.vertical = true;
     letter.value = w[char];
-    if (typeof letter.words === "undefined")
-      letter.words = [];
-    letter.words.push("v-"+id);
+
+    letter.wordV = id;
     letter.posV = parseInt(char);
   }
-  addedWords++;
-  return redraw();
+  words[id].vertical=true;
+  return redraw(crossword);
 }
 
 
@@ -268,13 +266,12 @@ function addHorizWord(l,c,w,pos,id) {
     letter.empty = false;
     letter.horizontal = true;
     letter.value = w[char];
-    if (typeof letter.words === "undefined")
-      letter.words = [];
-    letter.words.push("h-"+id);
+
+    letter.wordH = id;
     letter.posH = parseInt(char);
   }
-  addedWords++;
-  return redraw();
+  words[id].vertical=false;
+  return redraw(crossword);
 }
 
 function addLinesStart(num, length=crossword[0].length) {
@@ -325,8 +322,69 @@ function addColumnsEnd(num=1) {
   }
 }
 
+function saveCrossword() {
+  let newCrossword = {};
+  newCrossword.lines = crossword.length;
+  newCrossword.columns = crossword[0].length;
+  newCrossword.words = {};
+  for (let line in crossword) {
+    for (let column in crossword[line]) {
+      let letter = crossword[line][column];
+      if (letter.posH===0) {
+        newCrossword.words[letter.wordH] = {};
+        newCrossword.words[letter.wordH].line = parseInt(line);
+        newCrossword.words[letter.wordH].column = parseInt(column);
+        newCrossword.words[letter.wordH].vertical = false;
+        newCrossword.words[letter.wordH].letters = words[letter.wordH].word.length;
+      }
+      if (letter.posV===0) {
+        newCrossword.words[letter.wordV] = {};
+        newCrossword.words[letter.wordV].line = parseInt(line);
+        newCrossword.words[letter.wordV].column = parseInt(column);
+        newCrossword.words[letter.wordV].vertical = true;
+        newCrossword.words[letter.wordV].letters = words[letter.wordV].word.length;
+      }
+    }
+  }
+  return newCrossword;
+}
 
-function redraw() {
+function generateCrossword(cw) {
+  let result = [];
+  while (cw.lines>0) {
+    result.push([]);
+    cw.lines--;
+  }
+  for (let line in result) {
+    for (let i=0;i<cw.columns;i++) {
+      let letter = {};
+      letter.empty = true;
+      result[line].push(letter);
+    }    
+  }
+  for (let word in cw.words) {
+    for (let pos=0; pos<cw.words[word].letters; pos++) {
+      if(cw.words[word].vertical) {
+        let letter = result[cw.words[word].line + pos][cw.words[word].column];
+        letter.empty = false;
+        letter.vertical = true;
+        letter.posV = pos;
+        letter.wordV = word;
+        letter.value = " ";
+      } else {
+        let letter = result[cw.words[word].line][cw.words[word].column + pos];
+        letter.empty = false;
+        letter.horizontal = true;
+        letter.posH = pos;
+        letter.wordH = word;
+        letter.value = " ";
+      }
+    }
+  }
+  return result;
+}
+
+function redraw(crossword) { 
   let root = document.getElementById("root");
   root.innerHTML = "";
   for (let line in crossword) {
@@ -339,13 +397,19 @@ function redraw() {
       letterDiv.classList.add("letter");
       if(!letter.empty) {
         letterDiv.innerText = letter.value;
-        for(let word in letter.words)
-          letterDiv.classList.add(letter.words[word]);
+        
+        if(letter.wordH)
+          letterDiv.classList.add("h-"+letter.wordH);
+        
+        if(letter.wordV)
+          letterDiv.classList.add("v-"+letter.wordV);
+
         if(letter.posH===0) {
           if(letter.posV===0) {
             crossword[parseInt(line)+1][char].addListener = true;
           }
           letterDiv.classList.add("clickable");
+          letterDiv.setAttribute("word-id",letter.wordH);
           letterDiv.addEventListener("click",(e)=>{
             let activeLetters = Array.from(document.getElementsByClassName("active"));
             activeLetters.forEach((elem)=>elem.classList.remove("active"));
@@ -359,7 +423,7 @@ function redraw() {
           });
         } else if (letter.posV===0 || letter.addListener) {
           letterDiv.classList.add("clickable");
-
+          letterDiv.setAttribute("word-id",letter.wordV);
           letterDiv.addEventListener("click",(e)=>{
             let activeLetters = Array.from(document.getElementsByClassName("active"));
             activeLetters.forEach((elem)=>elem.classList.remove("active"));
