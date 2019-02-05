@@ -1,24 +1,68 @@
-let addWord = document.getElementById("addWord");
-let word = document.getElementById("word");
-let generate = document.getElementById("generate");
-let removeWord = document.getElementById("remove-word");
 
-removeWord.addEventListener("click",removeSelectedWord);
+//Adding event listeners to buttons and form submits
+
+let generateButton = document.getElementById("generate");
+generateButton.addEventListener("click",generate);
+
+let removeWordButton = document.getElementById("remove-word");
+removeWordButton.addEventListener("click",removeSelectedWord);
+
+
+
+let addWord = document.getElementById("addWord");
+let addHint = document.getElementById("addHint");
+
 addWord.addEventListener("submit",(e)=>{
   e.preventDefault();
+  let word = document.getElementById("word");
   appendWord(word.value);
   word.value="";
 });
 
-generate.addEventListener("click",()=>{
-    crossword=[];    
-    for(let id in words) {
-      tryAddWord(words[id].word,id);
-    };    
+addHint.addEventListener("submit",(e)=>{
+  e.preventDefault();
+  let hintText = document.getElementById("hint");
+  let selectedWord = document.getElementsByClassName("selected-word")[0];
+  if(selectedWord) {
+    let id = selectedWord.getAttribute("word-id");
+    words[id].hint = hintText.value;  
+    hintText.value = "";
+  }
 });
+
+/////////////////////// END ///////////////////////////////
+
+
 let crossword = [];
 let words = {};
 
+
+function generate() {
+  crossword=[];
+  for (let id in words) {
+    words[id].added = false;
+  }
+  for (let i=0; i<3; i++) {    
+    for(let id in words) {
+      if(!words[id].added)
+        tryAddWord(words[id].word,id);
+    };
+  }
+  markLeftovers();
+  redraw(crossword); 
+}
+
+function markLeftovers() {
+  let wordList = Array.from(document.getElementsByClassName("word"));
+  for (let i in wordList) {
+    let id = wordList[i].getAttribute("word-id");
+    if (!words[id].added) {
+      wordList[i].classList.add("leftover");
+    } else {
+      wordList[i].classList.remove("leftover");
+    }
+  }
+}
 
 function appendWord(w) {
   let id = 0;
@@ -26,6 +70,7 @@ function appendWord(w) {
     id++;
   words[id]={};
   words[id].word=w
+  words[id].hint="";
   return makeWordHTML(w, id);
 }
 
@@ -36,6 +81,8 @@ function makeWordHTML(w,id) {
     let selectedWords = Array.from(document.getElementsByClassName("selected-word"));
     selectedWords.forEach((elem)=>elem.classList.remove("selected-word"));
     node.classList.add("selected-word");
+    let hintText = document.getElementById("hint");
+    hintText.value = words[id].hint;
   }
   selectWord(span);
   span.addEventListener("click",(e)=>{selectWord(e.target)});
@@ -43,6 +90,7 @@ function makeWordHTML(w,id) {
   span.setAttribute("word-id",id);
   let wordsHTML = document.getElementById("words");
   wordsHTML.appendChild(span);
+  return generate();
 }
 
 function removeSelectedWord() {
@@ -53,6 +101,7 @@ function removeSelectedWord() {
     let wordsHTML = document.getElementById("words");
     wordsHTML.removeChild(selectedWord);
   }
+  return generate();
 }
 
 function tryAddWord(w, id) {
@@ -247,8 +296,7 @@ function addVertWord(l,c,w,pos,id) {
     letter.wordV = id;
     letter.posV = parseInt(char);
   }
-  words[id].vertical=true;
-  return redraw(crossword);
+  words[id].added=true;
 }
 
 
@@ -270,8 +318,7 @@ function addHorizWord(l,c,w,pos,id) {
     letter.wordH = id;
     letter.posH = parseInt(char);
   }
-  words[id].vertical=false;
-  return redraw(crossword);
+  words[id].added=true;
 }
 
 function addLinesStart(num, length=crossword[0].length) {
@@ -434,6 +481,7 @@ function redraw(crossword) {
                 letters.forEach((let)=>let.classList.add("active"));             
               }
             }
+
           });
         }
       } else {

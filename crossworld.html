@@ -6,11 +6,18 @@
     <body>
         <form id="addWord">
             <input id="word" type="text" />
-            <input type=submit value="Add word">
+            <input type=submit value="Add word" />
         </form>
         <button id="generate">Generate</button>
         <button id="remove-word">Remove Word</button>
+
         <div id="words"></div>
+
+        <form id="addHint">
+            <span>Hint: </span><textarea id="hint"></textarea>
+            <input type=submit value="Save" />
+        </form>
+
         <div id="view"><div id="root"></div></div>
         
         <script src="crossworld.js"></script>
