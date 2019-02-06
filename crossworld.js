@@ -7,6 +7,11 @@ generateButton.addEventListener("click",generate);
 let removeWordButton = document.getElementById("remove-word");
 removeWordButton.addEventListener("click",removeSelectedWord);
 
+let zoominButton = document.getElementById("zoom-in");
+zoominButton.addEventListener("click",()=>changeCrosswordSize(1));
+
+let zoomoutButton = document.getElementById("zoom-out");
+zoomoutButton.addEventListener("click",()=>changeCrosswordSize(-1));
 
 
 let addWord = document.getElementById("addWord");
@@ -35,6 +40,7 @@ addHint.addEventListener("submit",(e)=>{
 
 let crossword = [];
 let words = {};
+let zoomLevel = 3;
 
 
 function generate() {
@@ -431,17 +437,29 @@ function generateCrossword(cw) {
   return result;
 }
 
+function changeCrosswordSize(num) {
+  if(zoomLevel+num>=1 && zoomLevel+num<=3) {
+    let letters = Array.from(document.getElementsByClassName("letter"));
+    for (let i in letters) {
+      letters[i].classList.remove("size-"+zoomLevel);
+      letters[i].classList.add("size-"+(zoomLevel+num));
+    }
+    zoomLevel+=num;
+  }
+}
+
 function redraw(crossword) { 
   let root = document.getElementById("root");
   root.innerHTML = "";
   for (let line in crossword) {
     let lineDiv = document.createElement("div");
     lineDiv.classList.add("line");
-    lineDiv.style.width = (crossword[line].length * 54)+"px";
+    // lineDiv.style.width = (crossword[line].length * 54)+"px";
     for (let char in crossword[line]) {
       let letter = crossword[line][char];
       let letterDiv = document.createElement("div");
       letterDiv.classList.add("letter");
+      letterDiv.classList.add("size-"+zoomLevel);
       if(!letter.empty) {
         letterDiv.innerText = letter.value;
         
