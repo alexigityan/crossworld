@@ -4,6 +4,16 @@
 let generateButton = document.getElementById("generate");
 generateButton.addEventListener("click",generate);
 
+let saveButton = document.getElementById("save-crossword");
+saveButton.addEventListener("click",saveCrossword);
+
+
+let editHintButton = document.getElementById("edit-hint");
+editHintButton.addEventListener("click",()=>addHint.classList.add("visible"));
+
+let closeHintButton = document.getElementById("close-hint");
+closeHintButton.addEventListener("click",()=>addHint.classList.remove("visible"));
+
 let removeWordButton = document.getElementById("remove-word");
 removeWordButton.addEventListener("click",removeSelectedWord);
 
@@ -13,9 +23,8 @@ zoominButton.addEventListener("click",()=>changeCrosswordSize(1));
 let zoomoutButton = document.getElementById("zoom-out");
 zoomoutButton.addEventListener("click",()=>changeCrosswordSize(-1));
 
-
-let addWord = document.getElementById("addWord");
-let addHint = document.getElementById("addHint");
+let addHint = document.getElementById("add-hint");
+let addWord = document.getElementById("add-word");
 
 addWord.addEventListener("submit",(e)=>{
   e.preventDefault();
@@ -26,12 +35,11 @@ addWord.addEventListener("submit",(e)=>{
 
 addHint.addEventListener("submit",(e)=>{
   e.preventDefault();
-  let hintText = document.getElementById("hint");
+  let hintText = document.getElementById("hint-edit");
   let selectedWord = document.getElementsByClassName("selected-word")[0];
   if(selectedWord) {
     let id = selectedWord.getAttribute("word-id");
     words[id].hint = hintText.value;  
-    hintText.value = "";
   }
 });
 
@@ -41,6 +49,9 @@ addHint.addEventListener("submit",(e)=>{
 let crossword = [];
 let words = {};
 let zoomLevel = 3;
+
+//client-side
+let newCrossword;
 
 
 function generate() {
@@ -75,27 +86,25 @@ function appendWord(w) {
   while (words.hasOwnProperty(id))
     id++;
   words[id]={};
-  words[id].word=w
+  words[id].word=w;
   words[id].hint="";
-  return makeWordHTML(w, id);
-}
 
-function makeWordHTML(w,id) {
   let span = document.createElement("span");
   span.classList.add("word");
-  function selectWord(node) {
-    let selectedWords = Array.from(document.getElementsByClassName("selected-word"));
-    selectedWords.forEach((elem)=>elem.classList.remove("selected-word"));
-    node.classList.add("selected-word");
-    let hintText = document.getElementById("hint");
-    hintText.value = words[id].hint;
-  }
+    function selectWord(node) {
+      let selectedWords = Array.from(document.getElementsByClassName("selected-word"));
+      selectedWords.forEach((elem)=>elem.classList.remove("selected-word"));
+      node.classList.add("selected-word");
+      let hintText = document.getElementById("hint-edit");
+      hintText.value = words[id].hint;
+      document.getElementById("controls").classList.add("visible");
+    }
   selectWord(span);
   span.addEventListener("click",(e)=>{selectWord(e.target)});
   span.innerText = w;
   span.setAttribute("word-id",id);
-  let wordsHTML = document.getElementById("words");
-  wordsHTML.appendChild(span);
+  let wordContainer = document.getElementById("word-container");
+  wordContainer.appendChild(span);
   return generate();
 }
 
@@ -104,11 +113,18 @@ function removeSelectedWord() {
   if(selectedWord) {
     let id = selectedWord.getAttribute("word-id");
     delete words[id];
-    let wordsHTML = document.getElementById("words");
-    wordsHTML.removeChild(selectedWord);
+    let wordContainer = document.getElementById("word-container");
+    wordContainer.removeChild(selectedWord);
+    document.getElementById("controls").classList.remove("visible");
   }
   return generate();
 }
+
+function showHint(id) {
+  let target = document.getElementById("hint-text");
+  target.innerText = words[id].hint;
+}
+
 
 function tryAddWord(w, id) {
   w = w.toLowerCase();
@@ -389,6 +405,7 @@ function saveCrossword() {
         newCrossword.words[letter.wordH].column = parseInt(column);
         newCrossword.words[letter.wordH].vertical = false;
         newCrossword.words[letter.wordH].letters = words[letter.wordH].word.length;
+        newCrossword.words[letter.wordH].hint = words[letter.wordH].word.hint;        
       }
       if (letter.posV===0) {
         newCrossword.words[letter.wordV] = {};
@@ -396,6 +413,8 @@ function saveCrossword() {
         newCrossword.words[letter.wordV].column = parseInt(column);
         newCrossword.words[letter.wordV].vertical = true;
         newCrossword.words[letter.wordV].letters = words[letter.wordV].word.length;
+        newCrossword.words[letter.wordV].hint = words[letter.wordV].word.hint;
+
       }
     }
   }
@@ -454,7 +473,6 @@ function redraw(crossword) {
   for (let line in crossword) {
     let lineDiv = document.createElement("div");
     lineDiv.classList.add("line");
-    // lineDiv.style.width = (crossword[line].length * 54)+"px";
     for (let char in crossword[line]) {
       let letter = crossword[line][char];
       let letterDiv = document.createElement("div");
@@ -463,12 +481,14 @@ function redraw(crossword) {
       if(!letter.empty) {
         letterDiv.innerText = letter.value;
         
-        if(letter.wordH)
+        if(letter.wordH) {
           letterDiv.classList.add("h-"+letter.wordH);
-        
-        if(letter.wordV)
+          letterDiv.setAttribute("word-id",letter.wordH);
+        }
+        if(letter.wordV) {
           letterDiv.classList.add("v-"+letter.wordV);
-
+          letterDiv.setAttribute("word-id",letter.wordV);
+        }
         if(letter.posH===0) {
           if(letter.posV===0) {
             crossword[parseInt(line)+1][char].addListener = true;
@@ -480,11 +500,12 @@ function redraw(crossword) {
             activeLetters.forEach((elem)=>elem.classList.remove("active"));
             let classList = Array.from(e.target.classList);
             for (let cl in classList) {
-              if(classList[cl] !== "letter" && classList[cl].indexOf("v-")===-1 && classList[cl] !== "clickable") {
+              if(classList[cl].indexOf("h-")!==-1) {
                 let letters = Array.from(document.getElementsByClassName(classList[cl]));
                 letters.forEach((let)=>let.classList.add("active"));             
               }
             }
+            showHint(e.target.getAttribute("word-id"));
           });
         } else if (letter.posV===0 || letter.addListener) {
           letterDiv.classList.add("clickable");
@@ -494,12 +515,12 @@ function redraw(crossword) {
             activeLetters.forEach((elem)=>elem.classList.remove("active"));
             let classList = Array.from(e.target.classList);
             for (let cl in classList) {
-              if(classList[cl] !== "letter" && classList[cl].indexOf("h-")===-1 && classList[cl] !== "clickable") {
+              if(classList[cl].indexOf("v-")!==-1) {
                 let letters = Array.from(document.getElementsByClassName(classList[cl]));
                 letters.forEach((let)=>let.classList.add("active"));             
               }
             }
-
+            showHint(e.target.getAttribute("word-id"));
           });
         }
       } else {

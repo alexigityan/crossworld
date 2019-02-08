@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="crossworld.css">
+    </head>
+    <body>
+
+        <div id="view">
+            <div id="root"></div>
+            <button class="zoom-button" id="zoom-out">zoom-out</button>
+            <button class="zoom-button" id="zoom-in">zoom-in</button>
+        </div>
+        
+
+        <div id="word-block">
+            <form id="add-word">
+                <input id="word" type="text" />
+                <input type=submit value="Add word" />
+            </form>
+
+            <div id="word-container"></div>
+
+            <div id="controls" class="hidden">                
+                <button id="edit-hint">Edit hint</button>
+                <button id="remove-word">Remove Word</button>
+            </div>
+            
+            <form id="add-hint" class="hidden">
+                    <textarea id="hint-edit" placeholder="your hint here"></textarea>
+                    <input type=submit value="Save" />
+                    <button id="close-hint"> x </button>
+            </form>
+        </div>
+
+        <button id="generate">Generate</button>
+        <button id="save-crossword">Save Crossword</button>
+
+
+
+
+        
+        <script src="crossworld-redactor.js"></script>
+    </body>
+</html>
