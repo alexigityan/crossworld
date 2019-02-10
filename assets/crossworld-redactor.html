@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="crossworld.css">
+        <link rel="stylesheet" href="crossworld-redactor.css">
     </head>
     <body>
 
         <div id="view">
-            <div id="root"></div>
+            <div id="root" class="draggable"></div>
             <button class="zoom-button" id="zoom-out">zoom-out</button>
             <button class="zoom-button" id="zoom-in">zoom-in</button>
         </div>
@@ -14,26 +14,31 @@
 
         <div id="word-block">
             <form id="add-word">
-                <input id="word" type="text" />
-                <input type=submit value="Add word" />
+                <input id="word" type="text" placeholder="new word"/>
+                <input type=submit value="Add word" class="button" />
             </form>
 
             <div id="word-container"></div>
 
-            <div id="controls" class="hidden">                
-                <button id="edit-hint">Edit hint</button>
-                <button id="remove-word">Remove Word</button>
+            <div id="word-controls" class="hidden">
+                <div class="controls">
+                    <button id="generate" class="button">remix crossword</button>                
+                    <button id="remove-word" class="button">remove this word</button>
+                </div>
+                
+                <form id="add-hint">
+                        <textarea id="hint-edit" placeholder="add a hint for this word (all words need hints)"></textarea>
+                        <br />
+                        <input type="submit" value="save hint" class="button"/>
+                </form>
             </div>
-            
-            <form id="add-hint" class="hidden">
-                    <textarea id="hint-edit" placeholder="your hint here"></textarea>
-                    <input type=submit value="Save" />
-                    <button id="close-hint"> x </button>
-            </form>
         </div>
 
-        <button id="generate">Generate</button>
-        <button id="save-crossword">Save Crossword</button>
+        <div class="controls">                
+            <button id="save-crossword" class="button">Save Crossword</button>
+        </div>
+
+
 
 
 

@@ -4,6 +4,11 @@
 let loadCrosswordButton = document.getElementById("load-crossword");
 loadCrosswordButton.addEventListener("click",loadCrossword);
 
+let checkCrosswordButton = document.getElementById("check-crossword");
+checkCrosswordButton.addEventListener("click",checkCrossword);
+
+let cheatButton = document.getElementById("cheat-word");
+cheatButton.addEventListener("click",solveWord);
 
 let zoominButton = document.getElementById("zoom-in");
 zoominButton.addEventListener("click",()=>changeCrosswordSize(1));
@@ -17,11 +22,76 @@ wordInput.addEventListener("input",()=>showWordPreview(wordInput.value));
 let wordGuessForm = document.getElementById("word-guess");
 wordGuessForm.addEventListener("submit", (e)=>{
   e.preventDefault();
-  submitWord(wordInput.value);
+  if(wordInput.value)
+    submitWord(wordInput.value);
   wordInput.value = "";
 });
 
-/////////////////////// END ///////////////////////////////
+// End adding listeners
+
+// Setup dragging
+
+let dragItem = document.getElementById("root");
+let dragContainer = document.getElementById("view");
+
+let drag = false;
+let currentX;
+let currentY;
+let initialX;
+let initialY;
+let xOffset = 0;
+let yOffset = 0;
+
+dragContainer.addEventListener("mousedown", startDrag, false);
+dragContainer.addEventListener("mouseup", endDrag, false); 
+dragContainer.addEventListener("mousemove", doDrag, false);
+
+dragContainer.addEventListener("touchstart", startDrag, false);
+dragContainer.addEventListener("touchend", endDrag, false); 
+dragContainer.addEventListener("touchmove", doDrag, false);
+
+function startDrag(e) {
+  if (e.type === "touchstart") {
+    initialX = e.touches[0].clientX - xOffset;
+    initialY = e.touches[0].clientY - yOffset;
+  } else {
+    initialX = e.clientX - xOffset;
+    initialY = e.clientY - yOffset;
+  }
+
+  drag = true;
+}
+
+function doDrag(e) {
+  if(drag) {
+    e.preventDefault();
+
+    if (e.type === "touchmove") {
+      currentX = e.touches[0].clientX - initialX;
+      currentY = e.touches[0].clientY - initialY;
+    } else {
+      currentX = e.clientX - initialX;
+      currentY = e.clientY - initialY;
+    }
+
+    xOffset = currentX;
+    yOffset = currentY;
+
+    setTranslate(currentX, currentY, dragItem);
+  }
+}
+
+function endDrag(e) {
+  initialX = currentX;
+  initialY = currentY;
+  drag = false;
+}
+
+function setTranslate(x,y,item) {
+  item.style.transform = "translate3d("+x+"px,"+y+"px, 0)";
+}
+
+// End setup dragging
 
 
 let crossword = [];
@@ -100,9 +170,14 @@ function checkCrossword() {
   let xhr = new XMLHttpRequest();
   xhr.open("post","/check");
   xhr.onload = () => {
-    wrongAnswers = xhr.response;
-    redraw(crossword);
-    wrongAnswers = [];
+    console.log(xhr.response);
+    if(xhr.response==="w")
+      alert("crossword solved !");
+    else {
+      wrongAnswers = xhr.response;
+      redraw(crossword);
+      wrongAnswers = [];
+    }
   };
   xhr.setRequestHeader("Content-Type", "application/json");
 
@@ -115,7 +190,8 @@ function solveWord() {
 
   xhr.open("post","/solveword");
   xhr.onload = () => {
-    submitWord(xhr.response);
+    wordInput.value = xhr.response;
+    showWordPreview(xhr.response);
   };
   xhr.setRequestHeader("Content-Type", "text/plain");
 
@@ -231,7 +307,8 @@ function redraw(crossword) {
             showHint(id);
             setWordPreview(id);
             showWordPreview();
-            activeWord = id; 
+            activeWord = id;
+            document.getElementById("word-controls").classList.remove("hidden"); 
           });
         } else if (letter.posV===0 || letter.addListener) {
           letterDiv.classList.add("clickable");
@@ -251,6 +328,7 @@ function redraw(crossword) {
             setWordPreview(id);
             showWordPreview();
             activeWord = id; 
+            document.getElementById("word-controls").classList.remove("hidden"); 
           });
         }
       } else {

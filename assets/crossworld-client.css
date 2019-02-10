@@ -1,8 +1,4 @@
-html {
-  height:100%;
-}
-
-body {
+html, body {
   height:100%;
 }
 
@@ -17,6 +13,11 @@ body {
   margin:auto;
   overflow:hidden;
   white-space:nowrap;
+}
+
+
+#root {
+  position:absolute;
 }
 
 .zoom-button {
@@ -82,95 +83,74 @@ body {
 .letter.empty {
   border-color:wheat;
 }
-.letter.active {
-  background-color:lightgreen;
-}
-.letter.clickable {
-  cursor:pointer;
-  background-color:lightblue;
-}
+
+
 .letter.wrong {
   background-color:pink;
 }
+.letter.active {
+  background-color:lightgray;
+}
+.letter.clickable {
+  cursor:pointer;
+  background-color:wheat;
+}
+
 
 
 #word-block {
   padding:1em;
   width:80%;
   margin:auto;
+  margin-top:1em;
+  margin-bottom:1em;
   border-radius:20px;
   border: 1px solid gray;
 }
-#word-block #add-word {
-  width:50%;
+#word-block #hint-text {
+  width:70%;
   margin:auto;
+  text-align:center;
+  font-size:1.2em;
 }
-#word-block #word-container {
-  margin-top:1em;
+#word-block #word-preview {
+  width:90%;
+  margin:auto;
+  padding:1em;
+  text-align:center;
+  font-size:1.2em;
+  text-transform: uppercase;
 }
-#word-block #controls {
+#word-block #word-preview span {
+  display:inline-block;
+}
+#word-block #word-guess {
+  width:70%;
+  margin:auto;
+  text-align:center;
+}
+#word-block #word-guess input:first-child {
+  width:70%;
+  text-align: center;
+}
+
+.controls {
   text-align: center;
   margin:auto;
 }
-#word-block #controls button {
-  margin-right:20px;
+
+.button {
+  margin:10px;
   border:none;
   border-radius:0.5em;
   padding:0.5em 1em;
   cursor:pointer;
   text-transform: lowercase;
   font-weight: bold;
-}
-#word-block #controls #edit-hint {
   background-color:#426ef4;
 }
-#word-block #controls #remove-word {
-  background-color:#f72525;
-}
 
-.word {
-  display:inline-block;
-  background-color: #c6c6c6;
-  padding:0.1em 0.6em;
-  border:0.2em solid #c6c6c6;
-  margin-right:0.5em;
-  margin-bottom:1em;
-  border-radius:0.25em;
-  text-transform:lowercase;
-  text-align:center;
-  cursor:pointer;
-}
-.word.leftover {
-  background-color:#ff5b5b;
-  border-color:#ff5b5b;
-}
-.word.selected-word {
-  border-color:black;
-}
 
-#add-hint {
-  background-color:white;
-  border:2px solid black;
-  width:90%;
-  min-width:200px;
-  max-width:600px;
-  margin:auto;
-  margin-top:1em;
-  position:relative;
-  overflow:hidden;
-}
-#add-hint #close-hint {
-  display:inline-block;
-  position:absolute;
-  top:-10px;
-  right:-10px;
-  height:50px;
-  width:50px;
-  border:none;
-  border-radius:50%;
-  background-color:#f72525;
-  cursor:pointer;
-}
 
 #word-preview {
   margin:1em;

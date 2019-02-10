@@ -28,7 +28,10 @@ app.post("/check", (req,res)=>{
             wrongWords.push(id);
         }
     }
-    res.send(wrongWords);
+    if (wrongWords.length>0)
+        res.send(wrongWords);
+    else
+        res.send("w");
 });
 
 app.post("/solveword", (req,res)=>{

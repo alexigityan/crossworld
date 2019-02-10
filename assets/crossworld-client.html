@@ -10,16 +10,23 @@
             <button class="zoom-button" id="zoom-out">zoom-out</button>
             <button class="zoom-button" id="zoom-in">zoom-in</button>
         </div>
-        
-
         <button id="load-crossword">Load Crossword</button>
 
-        <div id="hint-text"></div>
-        <div id="word-preview"></div>
-        <form id="word-guess">
-            <input type="text" id="word-input" />
-            <input type="submit" value="Fill in" />
-        </form>
+        <div id="word-block">
+            <div id="word-controls" class="hidden">
+                <div id="hint-text"></div>
+                <div id="word-preview"></div>
+                <form id="word-guess">
+                    <input type="text" id="word-input" />
+                    <br />
+                    <input type="submit" value="Fill in" class="button"/>
+                </form>
+                <button id="cheat-word" class="button">i give up, just tell me</button>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="check-crossword" class=button>check crossword</button>
+        </div>
 
         
         <script src="crossworld-client.js"></script>

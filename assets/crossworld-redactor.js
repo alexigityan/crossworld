@@ -7,13 +7,6 @@ generateButton.addEventListener("click",generate);
 let saveButton = document.getElementById("save-crossword");
 saveButton.addEventListener("click",saveCrossword);
 
-
-let editHintButton = document.getElementById("edit-hint");
-editHintButton.addEventListener("click",()=>addHint.classList.add("visible"));
-
-let closeHintButton = document.getElementById("close-hint");
-closeHintButton.addEventListener("click",()=>addHint.classList.remove("visible"));
-
 let removeWordButton = document.getElementById("remove-word");
 removeWordButton.addEventListener("click",removeSelectedWord);
 
@@ -29,7 +22,8 @@ let addWord = document.getElementById("add-word");
 addWord.addEventListener("submit",(e)=>{
   e.preventDefault();
   let word = document.getElementById("word");
-  appendWord(word.value);
+  if(word.value)
+    appendWord(word.value);
   word.value="";
 });
 
@@ -41,17 +35,80 @@ addHint.addEventListener("submit",(e)=>{
     let id = selectedWord.getAttribute("word-id");
     words[id].hint = hintText.value;  
   }
+  markWords();
+
 });
 
-/////////////////////// END ///////////////////////////////
+// End adding listeners
 
+// Setup dragging
+
+let dragItem = document.getElementById("root");
+let dragContainer = document.getElementById("view");
+
+let drag = false;
+let currentX;
+let currentY;
+let initialX;
+let initialY;
+let xOffset = 0;
+let yOffset = 0;
+
+dragContainer.addEventListener("mousedown", startDrag, false);
+dragContainer.addEventListener("mouseup", endDrag, false); 
+dragContainer.addEventListener("mousemove", doDrag, false);
+
+dragContainer.addEventListener("touchstart", startDrag, false);
+dragContainer.addEventListener("touchend", endDrag, false); 
+dragContainer.addEventListener("touchmove", doDrag, false);
+
+function startDrag(e) {
+  if (e.type === "touchstart") {
+    initialX = e.touches[0].clientX - xOffset;
+    initialY = e.touches[0].clientY - yOffset;
+  } else {
+    initialX = e.clientX - xOffset;
+    initialY = e.clientY - yOffset;
+  }
+
+  drag = true;
+}
+
+function doDrag(e) {
+  if(drag) {
+    e.preventDefault();
+
+    if (e.type === "touchmove") {
+      currentX = e.touches[0].clientX - initialX;
+      currentY = e.touches[0].clientY - initialY;
+    } else {
+      currentX = e.clientX - initialX;
+      currentY = e.clientY - initialY;
+    }
+
+    xOffset = currentX;
+    yOffset = currentY;
+
+    setTranslate(currentX, currentY, dragItem);
+  }
+}
+
+function endDrag(e) {
+  initialX = currentX;
+  initialY = currentY;
+  drag = false;
+}
+
+function setTranslate(x,y,item) {
+  item.style.transform = "translate3d("+x+"px,"+y+"px, 0)";
+}
+
+// End setup dragging
 
 let crossword = [];
 let words = {};
 let zoomLevel = 3;
 
-//client-side
-let newCrossword;
 
 
 function generate() {
@@ -65,11 +122,11 @@ function generate() {
         tryAddWord(words[id].word,id);
     };
   }
-  markLeftovers();
+  markWords();
   redraw(crossword); 
 }
 
-function markLeftovers() {
+function markWords() {
   let wordList = Array.from(document.getElementsByClassName("word"));
   for (let i in wordList) {
     let id = wordList[i].getAttribute("word-id");
@@ -77,6 +134,11 @@ function markLeftovers() {
       wordList[i].classList.add("leftover");
     } else {
       wordList[i].classList.remove("leftover");
+    }
+    if (words[id].hint !== "") {
+      wordList[i].classList.add("has-hint");
+    } else {
+      wordList[i].classList.remove("has-hint");
     }
   }
 }
@@ -97,7 +159,7 @@ function appendWord(w) {
       node.classList.add("selected-word");
       let hintText = document.getElementById("hint-edit");
       hintText.value = words[id].hint;
-      document.getElementById("controls").classList.add("visible");
+      document.getElementById("word-controls").classList.add("visible");
     }
   selectWord(span);
   span.addEventListener("click",(e)=>{selectWord(e.target)});
@@ -115,7 +177,7 @@ function removeSelectedWord() {
     delete words[id];
     let wordContainer = document.getElementById("word-container");
     wordContainer.removeChild(selectedWord);
-    document.getElementById("controls").classList.remove("visible");
+    document.getElementById("word-controls").classList.remove("visible");
   }
   return generate();
 }
@@ -392,6 +454,12 @@ function addColumnsEnd(num=1) {
 }
 
 function saveCrossword() {
+  for (let id in words) {
+    if (words[id].hint==="") {
+      alert("NOT SO FAST, not all words have hints");
+      return false;
+    }
+  }
   let newCrossword = {};
   newCrossword.data = {};
   newCrossword.data.lines = crossword.length;
@@ -428,7 +496,7 @@ function saveCrossword() {
   let xhr = new XMLHttpRequest();
   xhr.open("post","/save");
   xhr.setRequestHeader("Content-Type", "application/json");
-
+  xhr.onload = () => alert("crossword saved !");
   xhr.send(JSON.stringify(newCrossword));
 
 
@@ -465,49 +533,6 @@ function redraw(crossword) {
       letterDiv.classList.add("size-"+zoomLevel);
       if(!letter.empty) {
         letterDiv.innerText = letter.value;
-        
-        if(letter.wordH) {
-          letterDiv.classList.add("h-"+letter.wordH);
-          letterDiv.setAttribute("word-id",letter.wordH);
-        }
-        if(letter.wordV) {
-          letterDiv.classList.add("v-"+letter.wordV);
-          letterDiv.setAttribute("word-id",letter.wordV);
-        }
-        if(letter.posH===0) {
-          if(letter.posV===0) {
-            crossword[parseInt(line)+1][char].addListener = true;
-          }
-          letterDiv.classList.add("clickable");
-          letterDiv.setAttribute("word-id",letter.wordH);
-          letterDiv.addEventListener("click",(e)=>{
-            let activeLetters = Array.from(document.getElementsByClassName("active"));
-            activeLetters.forEach((elem)=>elem.classList.remove("active"));
-            let classList = Array.from(e.target.classList);
-            for (let cl in classList) {
-              if(classList[cl].indexOf("h-")!==-1) {
-                let letters = Array.from(document.getElementsByClassName(classList[cl]));
-                letters.forEach((let)=>let.classList.add("active"));             
-              }
-            }
-            showHint(e.target.getAttribute("word-id"));
-          });
-        } else if (letter.posV===0 || letter.addListener) {
-          letterDiv.classList.add("clickable");
-          letterDiv.setAttribute("word-id",letter.wordV);
-          letterDiv.addEventListener("click",(e)=>{
-            let activeLetters = Array.from(document.getElementsByClassName("active"));
-            activeLetters.forEach((elem)=>elem.classList.remove("active"));
-            let classList = Array.from(e.target.classList);
-            for (let cl in classList) {
-              if(classList[cl].indexOf("v-")!==-1) {
-                let letters = Array.from(document.getElementsByClassName(classList[cl]));
-                letters.forEach((let)=>let.classList.add("active"));             
-              }
-            }
-            showHint(e.target.getAttribute("word-id"));
-          });
-        }
       } else {
         letterDiv.classList.add("empty");
       }

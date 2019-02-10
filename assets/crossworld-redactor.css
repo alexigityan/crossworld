@@ -1,8 +1,4 @@
-html {
-  height:100%;
-}
-
-body {
+html, body {
   height:100%;
 }
 
@@ -17,6 +13,10 @@ body {
   margin:auto;
   overflow:hidden;
   white-space:nowrap;
+}
+
+#root {
+  position:absolute;
 }
 
 .zoom-button {
@@ -82,13 +82,7 @@ body {
 .letter.empty {
   border-color:wheat;
 }
-.letter.active {
-  background-color:lightgreen;
-}
-.letter.clickable {
-  cursor:pointer;
-  background-color:lightblue;
-}
+
 
 
 
@@ -97,33 +91,50 @@ body {
   padding:1em;
   width:80%;
   margin:auto;
+  margin-top:1em;
+  margin-bottom:1em;
   border-radius:20px;
   border: 1px solid gray;
 }
 #word-block #add-word {
-  width:50%;
+  width:70%;
   margin:auto;
+  text-align:center;
 }
+
 #word-block #word-container {
   margin-top:1em;
 }
-#word-block #controls {
+
+#word-block #add-hint {
+  width:90%;
+  margin:auto;
+  text-align:center;
+}
+
+#word-block #add-hint textarea{
+  resize:none;
+  width:90%;
+  font-size:1.2em;
+}
+
+.controls {
   text-align: center;
   margin:auto;
 }
-#word-block #controls button {
-  margin-right:20px;
+
+.button {
+  margin:10px;
   border:none;
   border-radius:0.5em;
   padding:0.5em 1em;
   cursor:pointer;
   text-transform: lowercase;
   font-weight: bold;
-}
-#word-block #controls #edit-hint {
   background-color:#426ef4;
 }
-#word-block #controls #remove-word {
+
+.button#remove-word {
   background-color:#f72525;
 }
 
@@ -139,36 +150,16 @@ body {
   text-align:center;
   cursor:pointer;
 }
+.word.has-hint {
+  background-color:lightgreen;
+  border-color:lightgreen;
+}
 .word.leftover {
   background-color:#ff5b5b;
   border-color:#ff5b5b;
 }
 .word.selected-word {
   border-color:black;
-}
-
-#add-hint {
-  background-color:white;
-  border:2px solid black;
-  width:90%;
-  min-width:200px;
-  max-width:600px;
-  margin:auto;
-  margin-top:1em;
-  position:relative;
-  overflow:hidden;
-}
-#add-hint #close-hint {
-  display:inline-block;
-  position:absolute;
-  top:-10px;
-  right:-10px;
-  height:50px;
-  width:50px;
-  border:none;
-  border-radius:50%;
-  background-color:#f72525;
-  cursor:pointer;
 }
 
 
