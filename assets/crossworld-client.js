@@ -149,6 +149,7 @@ function showWordPreview(input) {
 
 function submitWord(word) {
   let id = activeWord;
+  word = word.toLowerCase();
   words[id]=word.substring(0,newCrossword.words[id].letters);
   let line = parseInt(newCrossword.words[id].line);
   let column = parseInt(newCrossword.words[id].column);
