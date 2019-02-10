@@ -393,33 +393,53 @@ function addColumnsEnd(num=1) {
 
 function saveCrossword() {
   let newCrossword = {};
-  newCrossword.lines = crossword.length;
-  newCrossword.columns = crossword[0].length;
-  newCrossword.words = {};
+  newCrossword.data = {};
+  newCrossword.data.lines = crossword.length;
+  newCrossword.data.columns = crossword[0].length;
+  newCrossword.data.words = {};
   for (let line in crossword) {
     for (let column in crossword[line]) {
       let letter = crossword[line][column];
       if (letter.posH===0) {
-        newCrossword.words[letter.wordH] = {};
-        newCrossword.words[letter.wordH].line = parseInt(line);
-        newCrossword.words[letter.wordH].column = parseInt(column);
-        newCrossword.words[letter.wordH].vertical = false;
-        newCrossword.words[letter.wordH].letters = words[letter.wordH].word.length;
-        newCrossword.words[letter.wordH].hint = words[letter.wordH].word.hint;        
+        newCrossword.data.words[letter.wordH] = {};
+        newCrossword.data.words[letter.wordH].line = parseInt(line);
+        newCrossword.data.words[letter.wordH].column = parseInt(column);
+        newCrossword.data.words[letter.wordH].vertical = false;
+        newCrossword.data.words[letter.wordH].letters = words[letter.wordH].word.length;
+        newCrossword.data.words[letter.wordH].hint = words[letter.wordH].hint;        
       }
       if (letter.posV===0) {
-        newCrossword.words[letter.wordV] = {};
-        newCrossword.words[letter.wordV].line = parseInt(line);
-        newCrossword.words[letter.wordV].column = parseInt(column);
-        newCrossword.words[letter.wordV].vertical = true;
-        newCrossword.words[letter.wordV].letters = words[letter.wordV].word.length;
-        newCrossword.words[letter.wordV].hint = words[letter.wordV].word.hint;
+        newCrossword.data.words[letter.wordV] = {};
+        newCrossword.data.words[letter.wordV].line = parseInt(line);
+        newCrossword.data.words[letter.wordV].column = parseInt(column);
+        newCrossword.data.words[letter.wordV].vertical = true;
+        newCrossword.data.words[letter.wordV].letters = words[letter.wordV].word.length;
+        newCrossword.data.words[letter.wordV].hint = words[letter.wordV].hint;
 
       }
     }
   }
-  return newCrossword;
+
+  newCrossword.solutions = {};
+  for (let i in words) {
+    newCrossword.solutions[i] = words[i].word;
+  }
+
+  let xhr = new XMLHttpRequest();
+  xhr.open("post","/save");
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+  xhr.send(JSON.stringify(newCrossword));
+
+
 }
+
+  let solutions = {};
+  for (let i in words) {
+    solutions[i] = words[i].word;
+  }
+
+
 
 function changeCrosswordSize(num) {
   if(zoomLevel+num>=1 && zoomLevel+num<=3) {

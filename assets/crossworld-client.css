@@ -89,8 +89,9 @@ body {
   cursor:pointer;
   background-color:lightblue;
 }
-
-
+.letter.wrong {
+  background-color:pink;
+}
 
 
 #word-block {
@@ -171,6 +172,13 @@ body {
   cursor:pointer;
 }
 
+#word-preview {
+  margin:1em;
+}
+.word-preview-letter {
+  padding:0.25em;
+  margin:0.25em;
+}
 
 .hidden {
   visibility:hidden;

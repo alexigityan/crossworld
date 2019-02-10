@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="crossworld.css">
+        <link rel="stylesheet" href="crossworld-client.css">
     </head>
     <body>
 
@@ -12,33 +12,16 @@
         </div>
         
 
-        <div id="word-block">
-            <form id="add-word">
-                <input id="word" type="text" />
-                <input type=submit value="Add word" />
-            </form>
+        <button id="load-crossword">Load Crossword</button>
 
-            <div id="word-container"></div>
-
-            <div id="controls" class="hidden">                
-                <button id="edit-hint">Edit hint</button>
-                <button id="remove-word">Remove Word</button>
-            </div>
-            
-            <form id="add-hint" class="hidden">
-                    <textarea id="hint-edit" placeholder="your hint here"></textarea>
-                    <input type=submit value="Save" />
-                    <button id="close-hint"> x </button>
-            </form>
-        </div>
-
-        <button id="generate">Generate</button>
-        <button id="save-crossword">Save Crossword</button>
-
-
-
+        <div id="hint-text"></div>
+        <div id="word-preview"></div>
+        <form id="word-guess">
+            <input type="text" id="word-input" />
+            <input type="submit" value="Fill in" />
+        </form>
 
         
-        <script src="crossworld.js"></script>
+        <script src="crossworld-client.js"></script>
     </body>
 </html>
