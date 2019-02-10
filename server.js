@@ -2,30 +2,36 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 
-let database;
+let database = [];
 
 app.use(express.static(__dirname+"/assets"));
+
+app.set("view engine", "ejs");
 
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/",(req,res)=>res.render("crossworld-redactor.html"));
+app.get("/",(req,res)=>res.render("crossworld-list", {list:database}));
+
+app.get("/cw/:id/", (req,res)=>{
+    let id = req.params.id;
+    res.render("crossworld-client.ejs", {id:id});
+});
 
 
 app.post("/save", (req,res)=>{
-    console.log(req.body);
-    database = req.body;
+    database.push(req.body);
     res.end();
 });
 
-app.post("/check", (req,res)=>{
-    console.log(req.body);
+app.post("/check/:id", (req,res)=>{
+    let id = parseInt(req.params.id);
     let check = req.body;
     let wrongWords = [];
-    for (let id in check) {
-        if (!(check[id] === database.solutions[id])) {
-            wrongWords.push(id);
+    for (let word in check) {
+        if (!(check[word] === database[id].solutions[word])) {
+            wrongWords.push(word);
         }
     }
     if (wrongWords.length>0)
@@ -34,21 +40,21 @@ app.post("/check", (req,res)=>{
         res.send("w");
 });
 
-app.post("/solveword", (req,res)=>{
-    console.log(req.body);
-    let id = req.body;
+app.post("/solveword/:id", (req,res)=>{
+    let id = parseInt(req.params.id);
+    let word = req.body;
 
-    if (database.solutions[id]) {
-        res.send(database.solutions[id]);
+    if (database[id].solutions[word]) {
+        res.send(database[id].solutions[word]);
     } else {
         res.end();
     }
 
 });
 
-app.get("/load", (req,res)=>{
-    console.log(database);
-    res.send(database.data);
+app.get("/load/:id", (req,res)=>{
+    let id = parseInt(req.params.id);
+    res.send(database[id].data);
 });
 
 app.listen(3000, ()=>console.log("crossworld server listening on 3000"));

@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="crossworld-client.css">
+        <title>CrossWorld List</title>
+    </head>
+    <body>
+
+        <div id="view">
+            <div id="root">
+                <%- list.map((el,i)=>`<a href=cw/${i}/><button class=button>${i}</button></a>`) %>
+            </div>
+
+        </div>
+        <div class="controls">
+            <a href="/crossworld-redactor.html"><button class="button">create your own crossword</button> </a>
+        </div>
+
+        
+        <script src="crossworld-client.js"></script>
+    </body>
+</html>

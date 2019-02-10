@@ -1,7 +1,9 @@
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="crossworld-client.css">
+        <link rel="stylesheet" href="/crossworld-client.css">
+        <title>CrossWorld Number <%- id %></title>
+        <meta id="crossword-id" number=<%- id %> />
     </head>
     <body>
 
@@ -10,7 +12,6 @@
             <button class="zoom-button" id="zoom-out">zoom-out</button>
             <button class="zoom-button" id="zoom-in">zoom-in</button>
         </div>
-        <button id="load-crossword">Load Crossword</button>
 
         <div id="word-block">
             <div id="word-controls" class="hidden">
@@ -25,10 +26,11 @@
             </div>
         </div>
         <div class="controls">
+            <a href="/"><button class="button">back to main menu</button></a>
             <button id="check-crossword" class=button>check crossword</button>
         </div>
 
         
-        <script src="crossworld-client.js"></script>
+        <script src="/crossworld-client.js"></script>
     </body>
 </html>

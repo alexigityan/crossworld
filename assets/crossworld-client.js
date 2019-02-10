@@ -1,9 +1,6 @@
 
 //Adding event listeners to buttons and form submits
 
-let loadCrosswordButton = document.getElementById("load-crossword");
-loadCrosswordButton.addEventListener("click",loadCrossword);
-
 let checkCrosswordButton = document.getElementById("check-crossword");
 checkCrosswordButton.addEventListener("click",checkCrossword);
 
@@ -99,6 +96,7 @@ let words = {};
 let zoomLevel = 3;
 
 //client-side
+let crosswordId = document.getElementById("crossword-id").getAttribute("number");
 let newCrossword;
 let activeWord;
 let wordPreview;
@@ -168,9 +166,9 @@ function submitWord(word) {
 
 function checkCrossword() {
   let xhr = new XMLHttpRequest();
-  xhr.open("post","/check");
+  xhr.open("post","/check/"+crosswordId);
   xhr.onload = () => {
-    console.log(xhr.response);
+
     if(xhr.response==="w")
       alert("crossword solved !");
     else {
@@ -188,7 +186,7 @@ function solveWord() {
   let id = activeWord;
   let xhr = new XMLHttpRequest();
 
-  xhr.open("post","/solveword");
+  xhr.open("post","/solveword/"+crosswordId);
   xhr.onload = () => {
     wordInput.value = xhr.response;
     showWordPreview(xhr.response);
@@ -205,9 +203,10 @@ function loadCrossword() {
     newCrossword = JSON.parse(xhr.response);
     generateCrossword(newCrossword);
   };
-  xhr.open("get","/load");
+  xhr.open("get","/load/"+crosswordId);
   xhr.send();
 }
+loadCrossword();
 
 function generateCrossword(cw) {
   let result = [];
