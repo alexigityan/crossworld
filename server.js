@@ -5,7 +5,6 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const mongoUser = process.env.USER;
 const mongoPass = process.env.PASS;
-console.log("user: "+mongoUser +", pass: "+mongoPass);
 mongoose.connect(`mongodb://${mongoUser}:${mongoPass}@ds135817.mlab.com:35817/crossworld`);
 mongoose.connection.on("error", ()=>console.log("connection-error"));
 
