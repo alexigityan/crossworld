@@ -23,8 +23,8 @@ html, body {
 .zoom-button {
   display:inline-block;
   position:absolute;
-  bottom:-20px;
-  left:-20px;
+  bottom:-10px;
+  left:-10px;
   height:70px;
   width:70px;
   border:none;
@@ -36,7 +36,7 @@ html, body {
 }
 .zoom-button:last-of-type {
   left:unset;
-  right:-20px;
+  right:-10px;
 
 }
 
