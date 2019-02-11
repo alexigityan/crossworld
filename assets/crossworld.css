@@ -25,8 +25,8 @@ html, body {
   position:absolute;
   bottom:-20px;
   left:-20px;
-  height:100px;
-  width:100px;
+  height:70px;
+  width:70px;
   border:none;
   border-radius:50%;
   background-color:gray;
@@ -83,8 +83,6 @@ html, body {
 .letter.empty {
   border-color:wheat;
 }
-
-
 .letter.wrong {
   background-color:pink;
 }
@@ -96,8 +94,6 @@ html, body {
   background-color:wheat;
 }
 
-
-
 #word-block {
   padding:1em;
   width:80%;
@@ -107,11 +103,29 @@ html, body {
   border-radius:20px;
   border: 1px solid gray;
 }
+#word-block #add-word {
+  width:70%;
+  margin:auto;
+  text-align:center;
+}
 #word-block #hint-text {
   width:70%;
   margin:auto;
   text-align:center;
   font-size:1.2em;
+}
+#word-block #word-container {
+  margin-top:1em;
+}
+#word-block #add-hint {
+  width:90%;
+  margin:auto;
+  text-align:center;
+}
+#word-block #add-hint textarea{
+  resize:none;
+  width:90%;
+  font-size:1em;
 }
 #word-block #word-preview {
   width:90%;
@@ -149,7 +163,9 @@ html, body {
   font-weight: bold;
   background-color:#426ef4;
 }
-
+.button#remove-word {
+  background-color:#f72525;
+}
 
 
 #word-preview {
@@ -158,6 +174,30 @@ html, body {
 .word-preview-letter {
   padding:0.25em;
   margin:0.25em;
+}
+
+.word {
+  display:inline-block;
+  background-color: #c6c6c6;
+  padding:0.1em 0.6em;
+  border:0.2em solid #c6c6c6;
+  margin-right:0.5em;
+  margin-bottom:1em;
+  border-radius:0.25em;
+  text-transform:lowercase;
+  text-align:center;
+  cursor:pointer;
+}
+.word.has-hint {
+  background-color:lightgreen;
+  border-color:lightgreen;
+}
+.word.leftover {
+  background-color:#ff5b5b;
+  border-color:#ff5b5b;
+}
+.word.selected-word {
+  border-color:black;
 }
 
 .hidden {
