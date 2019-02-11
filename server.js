@@ -2,6 +2,24 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 
+const mongoose = require("mongoose");
+const mongoUser = process.env.USER;
+const mongoPass = process.env.PASS;
+console.log("user: "+mongoUser +", pass: "+mongoPass);
+mongoose.connect(`mongodb://${mongoUser}:${mongoPass}@ds135817.mlab.com:35817/crossworld`);
+mongoose.connection.on("error", ()=>console.log("connection-error"));
+
+let crosswordSchema = new mongoose.Schema({
+    data:{
+        lines: Number,
+        columns: Number,
+        words: Object
+    },
+    solutions: Object
+});
+
+let CrosswordModel = mongoose.model("CrosswordModel", crosswordSchema);
+
 let database = [];
 
 app.use(express.static(__dirname+"/assets"));
@@ -12,7 +30,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/",(req,res)=>res.render("crossworld-list", {list:database}));
+app.get("/",(req,res)=>{
+    CrosswordModel.find({}, (err,users)=>{
+        let arr = [];
+        users.forEach(user=>arr.push(user));
+        database = arr;
+        res.render("crossworld-list", {list:database});
+    });
+});
 
 app.get("/cw/:id/", (req,res)=>{
     let id = req.params.id;
@@ -21,7 +46,8 @@ app.get("/cw/:id/", (req,res)=>{
 
 
 app.post("/save", (req,res)=>{
-    database.push(req.body);
+    let crosswordDocument = new CrosswordModel(req.body);
+    crosswordDocument.save((err)=>(err) ? console.log("save error") : null);
     res.end();
 });
 
