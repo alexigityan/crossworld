@@ -23,7 +23,7 @@ addWord.addEventListener("submit",(e)=>{
   e.preventDefault();
   let word = document.getElementById("word");
   if(word.value)
-    appendWord(word.value);
+    appendWord(word.value.toLowerCase());
   word.value="";
 });
 
@@ -77,19 +77,31 @@ function startDrag(e) {
 function doDrag(e) {
   if(drag) {
     e.preventDefault();
-
     if (e.type === "touchmove") {
-      currentX = e.touches[0].clientX - initialX;
-      currentY = e.touches[0].clientY - initialY;
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+      
     } else {
-      currentX = e.clientX - initialX;
-      currentY = e.clientY - initialY;
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+      
     }
+    if (
+      currentX <= dragContainer.clientWidth*0.8 && 
+      currentY <= dragContainer.clientHeight*0.8 &&
+      currentX >= -dragItem.clientWidth*0.8 &&
+      currentY >= -dragItem.clientHeight*0.8
+    ) {
+      xOffset = currentX; 
+      yOffset = currentY;    
 
-    xOffset = currentX;
-    yOffset = currentY;
+      setTranslate(currentX, currentY, dragItem);
+    } else {
+      currentX = initialX;
+      currentY = initialY;
+    }
+  
 
-    setTranslate(currentX, currentY, dragItem);
   }
 }
 
@@ -101,6 +113,12 @@ function endDrag(e) {
 
 function setTranslate(x,y,item) {
   item.style.transform = "translate3d("+x+"px,"+y+"px, 0)";
+}
+
+function resetZoom() {
+  xOffset = 0;
+  yOffset = 0;
+  setTranslate(0,0,dragItem);
 }
 
 // End setup dragging
@@ -510,13 +528,16 @@ function saveCrossword() {
 
 
 function changeCrosswordSize(num) {
-  if(zoomLevel+num>=1 && zoomLevel+num<=3) {
+  const minZoom = 1;
+  const maxZoom = 4;
+  if(zoomLevel+num>=minZoom && zoomLevel+num<=maxZoom) {
     let letters = Array.from(document.getElementsByClassName("letter"));
     for (let i in letters) {
       letters[i].classList.remove("size-"+zoomLevel);
       letters[i].classList.add("size-"+(zoomLevel+num));
     }
     zoomLevel+=num;
+    resetZoom();
   }
 }
 
@@ -540,4 +561,5 @@ function redraw(crossword) {
     }
     root.appendChild(lineDiv);
   }
+
 }

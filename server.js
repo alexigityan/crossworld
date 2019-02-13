@@ -31,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/",(req,res)=>{
     CrosswordModel.find({}, (err,users)=>{
+        if (err) res.render("crossword-list", {list:database});
         let arr = [];
         users.forEach(user=>arr.push(user));
         database = arr;

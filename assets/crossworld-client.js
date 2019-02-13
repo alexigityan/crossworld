@@ -70,11 +70,20 @@ function doDrag(e) {
       currentX = e.clientX - initialX;
       currentY = e.clientY - initialY;
     }
+    if (
+      currentX <= dragContainer.clientWidth*0.8 && 
+      currentY <= dragContainer.clientHeight*0.8 &&
+      currentX >= -dragItem.clientWidth*0.8 &&
+      currentY >= -dragItem.clientHeight*0.8
+    ) {
+      xOffset = currentX; 
+      yOffset = currentY;    
 
-    xOffset = currentX;
-    yOffset = currentY;
-
-    setTranslate(currentX, currentY, dragItem);
+      setTranslate(currentX, currentY, dragItem);
+    } else {
+      currentX = initialX;
+      currentY = initialY;
+    }
   }
 }
 
@@ -86,6 +95,12 @@ function endDrag(e) {
 
 function setTranslate(x,y,item) {
   item.style.transform = "translate3d("+x+"px,"+y+"px, 0)";
+}
+
+function resetZoom() {
+  xOffset = 0;
+  yOffset = 0;
+  setTranslate(0,0,dragItem);
 }
 
 // End setup dragging
@@ -174,6 +189,7 @@ function checkCrossword() {
       alert("crossword solved !");
     else {
       wrongAnswers = xhr.response;
+      activeWord="";
       redraw(crossword);
       wrongAnswers = [];
     }
@@ -249,13 +265,16 @@ function generateCrossword(cw) {
 }
 
 function changeCrosswordSize(num) {
-  if(zoomLevel+num>=1 && zoomLevel+num<=3) {
+  const minZoom = 1;
+  const maxZoom = 4;
+  if(zoomLevel+num>=minZoom && zoomLevel+num<=maxZoom) {
     let letters = Array.from(document.getElementsByClassName("letter"));
     for (let i in letters) {
       letters[i].classList.remove("size-"+zoomLevel);
       letters[i].classList.add("size-"+(zoomLevel+num));
     }
     zoomLevel+=num;
+    resetZoom();
   }
 }
 
@@ -307,8 +326,10 @@ function redraw(crossword) {
             showHint(id);
             setWordPreview(id);
             showWordPreview();
+
             activeWord = id;
-            document.getElementById("word-controls").classList.remove("hidden"); 
+            document.getElementById("word-controls").classList.remove("hidden");
+
           });
         } else if (letter.posV===0 || letter.addListener) {
           letterDiv.classList.add("clickable");

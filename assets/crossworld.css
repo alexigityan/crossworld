@@ -40,12 +40,6 @@ html, body {
 
 }
 
-
-.line {
-  margin-top:0.25em;
-  margin-bottom:0.25em;
-}
-
 .letter {
   display:inline-block;
   vertical-align:top;
@@ -53,38 +47,47 @@ html, body {
   border-color: tan;
   border-style: solid;
   border-radius:0.3em;
-  margin-left:0.25em;
-  margin-right:0.25em;
+  margin:0.25em;
   text-transform:uppercase;
   text-align:center;
   color: saddlebrown;
 }
-.letter.size-3 {
+.letter.size-4 {
   font-size:1em;
   line-height:1em;
   height:1em;
   width:1em;
   padding:0.75em;
 }
-.letter.size-2 {
+.letter.size-3 {
   font-size:0.8em;
   line-height:0.8em;
   height:0.8em;
   width:0.8em;
   padding:0.5em;
 }
-.letter.size-1 {
+.letter.size-2 {
   font-size:0.6em;
   line-height:0.6em;
   height:0.8em;
   width:0.8em;
   padding:0.4em;
 }
-.letter.empty {
-  border-color:wheat;
+.letter.size-1 {
+  font-size:0.4em;
+  line-height:0.4em;
+  height:0.6em;
+  width:0.6em;
+  padding:0.4em;
+  margin-top:0.1em;
+  margin-bottom:0.1em;
 }
+.letter.empty {
+  border-color:#FFEBCD;
+}
+
 .letter.wrong {
-  background-color:pink;
+  background-color:#FFC7C7;
 }
 .letter.active {
   background-color:lightgray;
