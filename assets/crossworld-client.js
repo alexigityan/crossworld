@@ -188,7 +188,7 @@ function checkCrossword() {
     if(xhr.response==="w")
       alert("crossword solved !");
     else {
-      wrongAnswers = xhr.response;
+      wrongAnswers = JSON.parse(xhr.response);
       activeWord="";
       redraw(crossword);
       wrongAnswers = [];
